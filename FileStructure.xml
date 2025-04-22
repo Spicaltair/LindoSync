@@ -1,0 +1,14 @@
+G:\Projects\LindoSync\
+├── main.py
+├── platforms\
+│   ├── __init__.py
+│   ├── xiaohongshu.py
+│   ├── zhihu.py              # 简单模拟版
+│   └── zhihu_auto.py         ✅ 自动化真实发布
+├── utils\
+│   ├── __init__.py
+│   └── save_cookie.py        ✅ 保存 cookie
+├── data\
+│   ├── content.txt
+│   └── publish_log.txt
+
