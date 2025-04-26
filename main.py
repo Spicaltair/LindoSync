@@ -1,28 +1,37 @@
-from platforms import wechat, xiaohongshu, zhihu, bilibili
-from utils import logger
+# LindoSync 极简美学版内容输入器（Flask+Tailwind）
 
-def load_content():
-    with open('data/content.txt', 'r', encoding='utf-8') as f:
-        return f.read()
+from flask import Flask, render_template, request, redirect, url_for
+import os
 
-def main():
-    print("🎯 欢迎使用 LindoSync 原型工具")
-    print("请选择发布平台：")
-    print("1. 微信公众号\n2. 小红书\n3. 知乎\n4. B站")
-    choice = input("请输入编号（支持多选，用逗号分隔）：")
-    platforms = choice.split(',')
+app = Flask(__name__)
 
-    content = load_content()
-    for p in platforms:
-        p = p.strip()
-        if p == '1':
-            wechat.publish(content)
-        elif p == '2':
-            xiaohongshu.publish("这是测试内容")
-        elif p == '3':
-            zhihu.publish(content)
-        elif p == '4':
-            bilibili.publish(content)
+# 自动定位 data 目录
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+os.makedirs(DATA_DIR, exist_ok=True)
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        content = request.form.get("content", "").strip()
+
+        print(f"收到标题：{title}")
+        print(f"收到正文：{content}")
+
+        if title and content:
+            file_path = os.path.join(DATA_DIR, "origin.txt")
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(f"{title}\n\n{content}")
+            print(f"✅ 已保存到 {file_path}")
+            return redirect(url_for("success"))
+        else:
+            print("⚠️ 表单未填写完整，未保存")
+    return render_template("index.html")
+
+@app.route("/success")
+def success():
+    return render_template("success.html")
 
 if __name__ == "__main__":
-    main()
+    app.run(debug=True)
