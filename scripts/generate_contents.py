@@ -1,76 +1,79 @@
 import os
-import requests
+import sys
+import openai
 from dotenv import load_dotenv
 
-# 加载环境变量
 load_dotenv()
 
-# DeepSeek API Key 和 Endpoint
-DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
-DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions"
+# 设置 API 基础信息
+API_MODE = os.getenv("API_MODE", "deepseek")  # "deepseek" or "openai"
+API_KEY = os.getenv("API_KEY")
 
-# 项目目录
+# 根据不同平台设置 API参数
+if API_MODE.lower() == "deepseek":
+    openai.api_key = API_KEY
+    openai.api_base = "https://api.deepseek.com/v1"
+    MODEL_NAME = "deepseek-chat"
+    print("🚀 当前使用 DeepSeek API")
+elif API_MODE.lower() == "openai":
+    openai.api_key = API_KEY
+    MODEL_NAME = "gpt-3.5-turbo"
+    print("🚀 当前使用 OpenAI API")
+else:
+    raise ValueError(f"❌ 未知 API_MODE: {API_MODE}")
+
+# 基本路径设置
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
-os.makedirs(DATA_DIR, exist_ok=True)
 
 def load_origin():
     origin_path = os.path.join(DATA_DIR, "origin.txt")
     if not os.path.exists(origin_path):
-        raise FileNotFoundError("❌ 未找到 origin.txt")
+        raise FileNotFoundError("❌ 没有找到 origin.txt，请先在网页输入内容保存！")
+    
     with open(origin_path, "r", encoding="utf-8") as f:
         lines = f.readlines()
-    if not lines:
-        raise ValueError("❌ origin.txt 内容为空")
+    
     title = lines[0].strip()
     content = "".join(lines[1:]).strip()
     return title, content
 
-def call_deepseek(prompt):
-    headers = {
-        "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
-        "Content-Type": "application/json"
-    }
-    payload = {
-        "model": "deepseek-chat",  # 可以改成你的具体模型名称
-        "messages": [{"role": "user", "content": prompt}],
-        "temperature": 0.7
-    }
-    response = requests.post(DEEPSEEK_API_URL, json=payload, headers=headers)
-    if response.status_code != 200:
-        raise Exception(f"❌ DeepSeek API 调用失败: {response.status_code}, {response.text}")
-    data = response.json()
-    return data["choices"][0]["message"]["content"]
+def style_content(title, content, platform="zhihu"):
+    if platform == "zhihu":
+        prompt = f"将以下内容优化成适合知乎专栏发布的风格，注意分段自然、正式有条理，不要加表情符号：\n\n标题：{title}\n\n内容：{content}"
+    elif platform == "xhs":
+        prompt = f"将以下内容优化成适合小红书发布的风格，语言轻松，分段短小，可适当加入表情符号，吸引读者注意力：\n\n标题：{title}\n\n内容：{content}"
+    else:
+        raise ValueError(f"未知平台：{platform}")
 
-def save_content(platform, title, content):
-    path = os.path.join(DATA_DIR, f"content_{platform}.txt")
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(title + "\n\n" + content)
-    print(f"✅ 已生成 {platform} 稿件：{path}")
+    try:
+        response = openai.ChatCompletion.create(
+            model=MODEL_NAME,
+            messages=[
+                {"role": "system", "content": "你是一个擅长内容优化的AI助手。"},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
+        )
+        return response["choices"][0]["message"]["content"]
+    except Exception as e:
+        print(f"❌ 调用API失败：{e}")
+        sys.exit(1)
 
-def generate_for_platform(platform, base_content, style_instruction):
-    prompt = f"""
-你是一个专业内容编辑。请基于以下原文，按照"{platform}"平台的文风改写内容：
-要求：{style_instruction}
-
-原文：
-{base_content}
-"""
-    styled_content = call_deepseek(prompt)
-    return styled_content
+def save_styled_content(platform, styled_text):
+    target_file = os.path.join(DATA_DIR, f"content_{platform}.txt")
+    with open(target_file, "w", encoding="utf-8") as f:
+        f.write(styled_text.strip())
+    print(f"✅ 已生成 {target_file}")
 
 if __name__ == "__main__":
-    print("🚀 开始处理 origin.txt 内容...")
+    if len(sys.argv) != 2:
+        print("用法示例：python generate_contents.py zhihu")
+        print("或：python generate_contents.py xhs")
+        sys.exit(1)
+
+    platform = sys.argv[1]
+
     title, content = load_origin()
-
-    # 平台风格定义
-    platforms = {
-        "zhihu": "保持正式、逻辑严谨、自然换行、适当总结、结尾鼓励点赞收藏",
-        "xhs": "轻松口语化、多用短句、自然空行、增加emoji符号、适合小红书口吻"
-    }
-
-    for platform, instruction in platforms.items():
-        styled_content = generate_for_platform(platform, content, instruction)
-        save_content(platform, title, styled_content)
-
-    print("🎉 全部平台内容生成完成！")
+    styled_text = style_content(title, content, platform=platform)
+    save_styled_content(platform, styled_text)

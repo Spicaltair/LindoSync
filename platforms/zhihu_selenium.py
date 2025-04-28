@@ -9,6 +9,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from utils.browser_manager import get_driver
+
+driver = get_driver(browser_type="chrome", headless=False)
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
