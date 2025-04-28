@@ -139,7 +139,7 @@ def publish_to_zhihu(title, content):
 
 
 if __name__ == "__main__":
-    with open("data/content.txt", "r", encoding="utf-8") as f:
+    with open("data/content_zhihu.txt", "r", encoding="utf-8") as f:
         lines = f.readlines()
         title = lines[0].strip()
         content = "".join(lines[1:]).strip()
