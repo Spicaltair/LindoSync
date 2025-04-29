@@ -1,11 +1,18 @@
 import os
+import sys
 import pickle
 import time
+
+# ⭕ 修正路径，保证上级目录模块可用
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+# ⭕ 导入自定义模块
 from utils.browser_manager import get_driver
+
 
 PLATFORMS = {
     "zhihu": "https://www.zhihu.com",
-    "xiaohongshu": "https://www.xiaohongshu.com",
+    "xhs": "https://www.xiaohongshu.com",
 }
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))

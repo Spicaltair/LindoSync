@@ -1,4 +1,5 @@
 import os
+import sys
 import time
 import pickle
 from selenium import webdriver
@@ -9,7 +10,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+# ⭕ 修正路径，保证上级目录模块可用
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+# ⭕ 导入自定义模块
 from utils.browser_manager import get_driver
+
+# ⭕ 其他正常逻辑
 
 driver = get_driver(browser_type="chrome", headless=False)
 
