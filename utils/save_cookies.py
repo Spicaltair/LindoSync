@@ -1,41 +1,30 @@
 import os
-import sys
-import pickle
 import time
+import pickle
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 
-# ⭕ 修正路径，保证上级目录模块可用
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
-
-# ⭕ 导入自定义模块
-from utils.browser_manager import get_driver
-
-
-PLATFORMS = {
-    "zhihu": "https://www.zhihu.com",
-    "xhs": "https://www.xiaohongshu.com",
-}
-
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-COOKIE_DIR = os.path.join(BASE_DIR, "data")
-os.makedirs(COOKIE_DIR, exist_ok=True)
-
-def save_cookie_for(platform_name, url, browser_type="chrome"):
-    driver = get_driver(browser_type=browser_type, headless=False)
+def save_cookie(name: str, url: str, file: str):
+    print(f"🌐 打开 {url} 页面，请登录完成...")
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     driver.get(url)
-    print(f"👉 打开 {platform_name} 页面，请登录完成...")
-    time.sleep(60)
 
+    time.sleep(30)  # 手动登录
+
+    os.makedirs("data", exist_ok=True)
     cookies = driver.get_cookies()
-    cookie_file = os.path.join(COOKIE_DIR, f"{platform_name}_cookies.pkl")
-    with open(cookie_file, "wb") as f:
+
+    with open(file, "wb") as f:
         pickle.dump(cookies, f)
 
-    print(f"✅ {platform_name} cookies 已保存到 {cookie_file}")
+    print(f"✅ {name} cookies 已保存到 {file}")
+    print("📋 cookies 中的 domain 字段如下：")
+    for c in cookies:
+        print(f"  - {c.get('domain')}")
+
     driver.quit()
 
 if __name__ == "__main__":
-    for platform, url in PLATFORMS.items():
-        try:
-            save_cookie_for(platform, url, browser_type="chrome")
-        except Exception as e:
-            print(f"❌ 保存 {platform} cookies 失败：{e}")
+    #save_cookie("知乎", "https://www.zhihu.com", "data/zhihu_cookies.pkl")
+    save_cookie("小红书", "https://creator.xiaohongshu.com", "data/xhs_cookies.pkl")
