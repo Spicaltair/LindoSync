@@ -1,3 +1,11 @@
-flask
-pillow
-playwright
+flask>=2.2.0
+pillow>=9.0.0
+playwright>=1.40
+jinja2>=3.0
+markupsafe>=2.0
+
+# Playwright 默认需要浏览器安装支持
+# 你还需执行一次：python -m playwright install
+
+# 如使用 gunicorn 部署：
+# gunicorn>=20.1.0  # 可选
