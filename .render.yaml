@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: lindosync
+    env: python
+    buildCommand: pip install -r requirements.txt && python -m playwright install
+    startCommand: python main.py
+    plan: free
+    region: oregon
+    runtime: python
+    branch: main
+    repo: https://github.com/yourname/your-repo
