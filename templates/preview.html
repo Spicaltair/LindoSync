@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>预览内容 - LindoSync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
+    <h1 class="text-4xl font-bold text-center text-gray-900">{{ title }}</h1>
+
+    {% if cover_url %}
+        <img src="{{ cover_url }}" alt="封面图" class="w-full rounded-lg shadow" />
+    {% endif %}
+
+
+    <div class="text-gray-800 whitespace-pre-wrap text-lg leading-relaxed">
+      {{ content }}
+    </div>
+
+    <form action="/publish_all" method="post" class="space-y-4 pt-6 border-t">
+      <p class="text-gray-700 font-medium">选择发布平台：</p>
+      <div class="flex space-x-6">
+        <label class="inline-flex items-center text-gray-600">
+          <input type="checkbox" name="platforms" value="zhihu" class="mr-2 accent-blue-500"> 知乎
+        </label>
+        <label class="inline-flex items-center text-gray-600">
+          <input type="checkbox" name="platforms" value="xhs" class="mr-2 accent-pink-500"> 小红书
+        </label>
+      </div>
+
+      <div class="flex justify-between pt-4">
+        <a href="/" class="text-sm text-gray-500 hover:underline">← 返回修改</a>
+        <button type="submit" class="bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-full font-semibold shadow-md">
+          🚀 发布到平台
+        </button>
+      </div>
+    </form>
+  </div>
+</body>
+</html>
