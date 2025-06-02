@@ -1,0 +1,7 @@
+services:
+  - type: worker
+    name: lindosync-worker
+    env: docker
+    plan: starter
+    autoDeploy: false
+    dockerfilePath: ./Dockerfile
