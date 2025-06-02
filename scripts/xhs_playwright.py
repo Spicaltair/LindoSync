@@ -8,9 +8,17 @@ COVER_PATH = None
 
 # 读取封面路径
 cover_path_file = os.path.join(DATA_DIR, "cover_path.txt")
+COVER_PATH = None
+
 if os.path.exists(cover_path_file):
     with open(cover_path_file, "r", encoding="utf-8") as f:
         COVER_PATH = f.read().strip()
+        print("[DEBUG] Read cover path from file:", COVER_PATH)
+
+if not COVER_PATH or not os.path.exists(COVER_PATH):
+    print("[WARN] Cover image not found, fallback to default static image.")
+    COVER_PATH = os.path.join("static", "cover.jpg")
+
 
 
 def publish_to_xhs():
