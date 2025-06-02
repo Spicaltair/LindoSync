@@ -21,7 +21,7 @@ if os.path.exists(cover_path_file):
 
 def publish_to_zhihu():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
 
         if not os.path.exists(STATE_PATH):
             print(" 未找到登录状态，请先运行 zhihu_login.py 登录并保存")

@@ -15,7 +15,7 @@ if os.path.exists(cover_path_file):
 
 def publish_to_xhs():
     with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
+        browser = p.chromium.launch(headless=True)
         
         if not os.path.exists(STATE_PATH):
             print("[ERROR] Login state not found. Please run xhs_login.py first.")
