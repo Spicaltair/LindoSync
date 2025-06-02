@@ -1,7 +1,9 @@
 services:
   - type: worker
-    name: lindosync-worker
+    name: lindosync-publisher
     env: docker
     plan: starter
-    autoDeploy: false
     dockerfilePath: ./Dockerfile
+    envVars:
+      - key: PLATFORM
+        value: xhs
