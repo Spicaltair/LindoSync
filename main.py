@@ -3,6 +3,7 @@ import os
 import subprocess
 from PIL import Image
 from shutil import copyfile
+from threading import Thread
 
 
 app = Flask(__name__)
@@ -88,19 +89,28 @@ def preview():
     return render_template("preview.html", title=title, content=content, cover_url=cover_url)
 
 
+
+
+def run_platform_tasks(platforms):
+    try:
+        if "zhihu" in platforms:
+            subprocess.run(["python", "scripts/generate_contents.py", "zhihu"], check=True)
+            subprocess.run(["python", "scripts/zhihu_playwright.py"], check=True)
+
+        if "xhs" in platforms:
+            subprocess.run(["python", "scripts/generate_contents.py", "xhs"], check=True)
+            subprocess.run(["python", "scripts/xhs_playwright.py"], check=True)
+
+        print("✅ 发布任务执行完毕")
+    except subprocess.CalledProcessError as e:
+        print(f"[ERROR] 平台执行出错: {e}")
+
 @app.route("/publish_all", methods=["POST"])
 def publish_all():
     platforms = request.form.getlist("platforms")
-
-    if "zhihu" in platforms:
-        subprocess.run(["python", "scripts/generate_contents.py", "zhihu"], check=True)
-        subprocess.run(["python", "scripts/zhihu_playwright.py"], check=True)
-
-    if "xhs" in platforms:
-        subprocess.run(["python", "scripts/generate_contents.py", "xhs"], check=True)
-        subprocess.run(["python", "scripts/xhs_playwright.py"], check=True)
-
+    Thread(target=run_platform_tasks, args=(platforms,)).start()
     return redirect(url_for("success"))
+
 
 
 @app.route("/success")
