@@ -48,7 +48,12 @@ def home():
 
                 # 统一保存处理后的封面图
                 final_path = os.path.join(static_dir, "cover.jpg")
-                process_image(raw_path, final_path)
+                try:
+                    process_image(raw_path, final_path)
+                except Exception as e:
+                    print(f"[ERROR] 图片处理失败: {e}")
+                    return "⚠️ 上传的图片无法处理，请上传 JPG/PNG 格式图像", 400
+
 
                 # 写入 cover_path.txt
                 with open(os.path.join(DATA_DIR, "cover_path.txt"), "w", encoding="utf-8") as f:
