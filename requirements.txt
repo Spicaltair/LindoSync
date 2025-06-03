@@ -4,6 +4,7 @@ playwright>=1.40
 jinja2>=3.0
 markupsafe>=2.0
 gunicorn
+python-dotenv
 
 
 # Playwright 默认需要浏览器安装支持
