@@ -89,21 +89,19 @@ def preview():
     return render_template("preview.html", title=title, content=content, cover_url=cover_url)
 
 
-
-
 def run_platform_tasks(platforms):
     try:
         if "zhihu" in platforms:
             subprocess.run(["python", "scripts/generate_contents.py", "zhihu"], check=True)
             subprocess.run(["python", "scripts/zhihu_playwright.py"], check=True)
-
         if "xhs" in platforms:
             subprocess.run(["python", "scripts/generate_contents.py", "xhs"], check=True)
             subprocess.run(["python", "scripts/xhs_playwright.py"], check=True)
-
-        print("✅ 发布任务执行完毕")
+        print("[INFO] ✅ 所有发布任务完成")
     except subprocess.CalledProcessError as e:
         print(f"[ERROR] 平台执行出错: {e}")
+        print(f"[ERROR] 命令输出: {e.output}")
+
 
 @app.route("/publish_all", methods=["POST"])
 def publish_all():
