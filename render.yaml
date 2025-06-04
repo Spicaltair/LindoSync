@@ -1,9 +1,11 @@
 services:
-  - type: worker
-    name: lindosync-publisher
+  - type: web
+    name: lindosync-web
     env: docker
     plan: starter
     dockerfilePath: ./Dockerfile
-    envVars:
-      - key: PLATFORM
-        value: xhs
+    autoDeploy: true
+    buildCommand: |
+      pip install playwright
+      playwright install
+    startCommand: python main.py
