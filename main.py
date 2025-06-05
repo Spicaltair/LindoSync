@@ -124,13 +124,12 @@ def run_platform_tasks(platforms):
         print(f"[ERROR] 🚨 错误: {e.stderr}")
 
 
-
-
 @app.route("/publish_all", methods=["POST"])
 def publish_all():
     platforms = request.form.getlist("platforms")
-    run_platform_tasks(platforms)
+    Thread(target=run_platform_tasks, args=(platforms,)).start()
     return redirect(url_for("success"))
+
 
 
 @app.route("/success")
