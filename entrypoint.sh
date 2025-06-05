@@ -1,10 +1,8 @@
 #!/bin/bash
-set -e
+# 预启动动作
 
-echo "✅ 确保 Playwright 浏览器已安装..."
-playwright install --with-deps
+echo "🔧 Running playwright install to ensure browsers are ready..."
+playwright install --with-deps || true
 
-echo "🚀 启动 Gunicorn 服务..."
-exec gunicorn main:app --bind 0.0.0.0:${PORT:-10000}
-
-
+echo "🚀 Starting the app..."
+exec "$@"
