@@ -88,6 +88,10 @@ def preview():
 
     return render_template("preview.html", title=title, content=content, cover_url=cover_url)
 
+def log(msg):
+    with open("data/publish_log.txt", "a", encoding="utf-8") as f:
+        f.write(msg + "\n")
+    print(msg)
 
 
 def run_platform_tasks(platforms):
