@@ -90,17 +90,28 @@ def preview():
 
 
 def run_platform_tasks(platforms):
-    try:
-        if "zhihu" in platforms:
-            subprocess.run(["python", "scripts/generate_contents.py", "zhihu"], check=True)
-            subprocess.run(["python", "scripts/zhihu_playwright.py"], check=True)
-        if "xhs" in platforms:
-            subprocess.run(["python", "scripts/generate_contents.py", "xhs"], check=True)
-            subprocess.run(["python", "scripts/xhs_playwright.py"], check=True)
-        print("[INFO] ✅ 所有发布任务完成")
-    except subprocess.CalledProcessError as e:
-        print(f"[ERROR] 平台执行出错: {e}")
-        print(f"[ERROR] 命令输出: {e.output}")
+    log_path = os.path.join(DATA_DIR, "publish_log.txt")
+    with open(log_path, "w", encoding="utf-8") as log:
+        for platform in platforms:
+            log.write(f"\n📌 正在处理平台：{platform}\n")
+            log.flush()
+            try:
+                subprocess.run(
+                    ["python", "scripts/generate_contents.py", platform],
+                    check=True, capture_output=True, text=True
+                )
+                subprocess.run(
+                    ["python", f"scripts/{platform}_playwright.py"],
+                    check=True, capture_output=True, text=True
+                )
+                log.write(f"✅ {platform} 发布成功！\n")
+            except subprocess.CalledProcessError as e:
+                log.write(f"❌ {platform} 发布失败！\n")
+                log.write(f"命令：{e.cmd}\n")
+                log.write(f"输出：{e.stdout}\n")
+                log.write(f"错误：{e.stderr}\n")
+            log.flush()
+
 
 
 @app.route("/publish_all", methods=["POST"])
@@ -113,7 +124,14 @@ def publish_all():
 
 @app.route("/success")
 def success():
-    return render_template("success.html")
+    log_path = os.path.join("data", "publish_log.txt")
+    log_content = ""
+
+    if os.path.exists(log_path):
+        with open(log_path, "r", encoding="utf-8") as f:
+            log_content = f.read()
+
+    return render_template("success.html", log=log_content)
 
 
 if __name__ == "__main__":

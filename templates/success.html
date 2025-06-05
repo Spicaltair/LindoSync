@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LindoSync - 保存成功</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>发布结果 - LindoSync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-white min-h-screen flex items-center justify-center">
-    <div class="text-center p-10">
-        <h1 class="text-3xl font-bold text-green-500 mb-6">✅ 内容已成功保存！</h1>
-        <a href="/" class="text-blue-500 underline">返回继续编辑</a>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-6">
+  <div class="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8 space-y-6">
+    <h1 class="text-3xl font-bold text-center text-gray-900">发布结果</h1>
+
+    <pre class="bg-gray-900 text-green-200 text-sm p-4 rounded-lg overflow-auto whitespace-pre-wrap">
+{{ log }}
+    </pre>
+
+    <div class="text-center pt-4">
+      <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-full font-semibold">
+        返回首页
+      </a>
     </div>
+  </div>
 </body>
 </html>
-"""

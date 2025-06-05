@@ -2,7 +2,5 @@ services:
   - type: web
     name: lindosync-web
     env: docker
-    plan: starter
     dockerfilePath: ./Dockerfile
-    autoDeploy: true
     startCommand: gunicorn main:app --bind 0.0.0.0:$PORT
