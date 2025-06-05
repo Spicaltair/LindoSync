@@ -7,8 +7,8 @@ COPY . /app
 # 安装依赖
 RUN pip install --no-cache-dir -r requirements.txt
 
-# 安装 Playwright 浏览器（关键）
-RUN playwright install --with-deps
+# 安装 Playwright 浏览器
+RUN playwright install chromium
 
 # 清理可能的缓存路径避免 Render 残留导致识别失败
 RUN rm -rf /root/.cache/ms-playwright /opt/render/.cache/ms-playwright || true
