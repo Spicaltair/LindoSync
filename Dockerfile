@@ -16,5 +16,8 @@ RUN rm -rf /root/.cache/ms-playwright /opt/render/.cache/ms-playwright || true
 # 显式指定浏览器路径（让 Playwright 确保能找到）
 ENV PLAYWRIGHT_BROWSERS_PATH=0
 
+# 目录
+RUN mkdir -p /app/data
+
 # 启动命令
 ENTRYPOINT ["bash", "entrypoint.sh"]

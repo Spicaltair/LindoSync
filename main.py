@@ -89,37 +89,48 @@ def preview():
     return render_template("preview.html", title=title, content=content, cover_url=cover_url)
 
 
+
 def run_platform_tasks(platforms):
     log_path = os.path.join(DATA_DIR, "publish_log.txt")
-    with open(log_path, "w", encoding="utf-8") as log:
-        for platform in platforms:
-            log.write(f"\n📌 正在处理平台：{platform}\n")
-            log.flush()
-            try:
-                subprocess.run(
-                    ["python", "scripts/generate_contents.py", platform],
-                    check=True, capture_output=True, text=True
-                )
-                subprocess.run(
-                    ["python", f"scripts/{platform}_playwright.py"],
-                    check=True, capture_output=True, text=True
-                )
-                log.write(f"✅ {platform} 发布成功！\n")
-            except subprocess.CalledProcessError as e:
-                log.write(f"❌ {platform} 发布失败！\n")
-                log.write(f"命令：{e.cmd}\n")
-                log.write(f"输出：{e.stdout}\n")
-                log.write(f"错误：{e.stderr}\n")
-            log.flush()
+    try:
+        with open(log_path, "a", encoding="utf-8") as log:
+            for p in platforms:
+                log.write(f"🔧 正在处理平台：{p}\n")
+                print(f"[INFO] ⏳ 开始处理平台：{p}")
+
+                subprocess.run(["python", "scripts/generate_contents.py", p], check=True, capture_output=True, text=True)
+
+                if p == "zhihu":
+                    res = subprocess.run(["python", "scripts/zhihu_playwright.py"], capture_output=True, text=True)
+                elif p == "xhs":
+                    res = subprocess.run(["python", "scripts/xhs_playwright.py"], capture_output=True, text=True)
+
+                log.write(f"✅ {p} 脚本输出:\n{res.stdout}\n")
+                log.write(f"⚠️ {p} 脚本错误:\n{res.stderr}\n")
+
+                print(f"[INFO] ✅ {p} 脚本输出:\n{res.stdout}")
+                print(f"[INFO] ⚠️ {p} 脚本错误:\n{res.stderr}")
+
+            log.write("[INFO] ✅ 所有发布任务完成\n")
+
+    except subprocess.CalledProcessError as e:
+        with open(log_path, "a", encoding="utf-8") as log:
+            log.write(f"[ERROR] ❌ 执行失败: {e}\n")
+            log.write(f"[ERROR] ⛔ 输出: {e.stdout}\n")
+            log.write(f"[ERROR] 🚨 错误: {e.stderr}\n")
+
+        print(f"[ERROR] ❌ 平台执行失败: {e}")
+        print(f"[ERROR] ⛔ 输出: {e.stdout}")
+        print(f"[ERROR] 🚨 错误: {e.stderr}")
+
 
 
 
 @app.route("/publish_all", methods=["POST"])
 def publish_all():
     platforms = request.form.getlist("platforms")
-    Thread(target=run_platform_tasks, args=(platforms,)).start()
+    run_platform_tasks(platforms)
     return redirect(url_for("success"))
-
 
 
 @app.route("/success")
