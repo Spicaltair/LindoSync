@@ -106,6 +106,9 @@ def log(msg):
 
 def run_platform_tasks(platforms):
     log_path = os.path.join(DATA_DIR, "publish_log.txt")
+    env = os.environ.copy()
+    env["PLAYWRIGHT_BROWSERS_PATH"] = "0"
+
     try:
         with open(log_path, "a", encoding="utf-8") as log:
             for p in platforms:
@@ -115,13 +118,9 @@ def run_platform_tasks(platforms):
                 subprocess.run(["python", "scripts/generate_contents.py", p], check=True, capture_output=True, text=True)
 
                 if p == "zhihu":
-                    env = os.environ.copy()
-                    env["PLAYWRIGHT_BROWSERS_PATH"] = "0"
                     res = subprocess.run(["python", "scripts/zhihu_playwright.py"], capture_output=True, text=True, env=env)
 
                 elif p == "xhs":
-                    env = os.environ.copy()
-                    env["PLAYWRIGHT_BROWSERS_PATH"] = "0"
                     res = subprocess.run(["python", "scripts/xhs_playwright.py"], capture_output=True, text=True)
 
                 log.write(f"✅ {p} 脚本输出:\n{res.stdout}\n")
