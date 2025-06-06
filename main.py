@@ -20,6 +20,16 @@ def process_image(input_path, output_path, size=(1280, 720), quality=85):
         img.thumbnail(size)
         img.save(output_path, format="JPEG", quality=quality)
 
+@app.route("/")
+def index():
+    return "LindoSync 服务运行中"
+
+# 触发脚本
+@app.route("/run_zhihu")
+def run_zhihu():
+    from scripts.zhihu_playwright import publish_to_zhihu
+    publish_to_zhihu()
+    return "已尝试运行 zhihu 脚本"
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -105,8 +115,13 @@ def run_platform_tasks(platforms):
                 subprocess.run(["python", "scripts/generate_contents.py", p], check=True, capture_output=True, text=True)
 
                 if p == "zhihu":
-                    res = subprocess.run(["python", "scripts/zhihu_playwright.py"], capture_output=True, text=True)
+                    env = os.environ.copy()
+                    env["PLAYWRIGHT_BROWSERS_PATH"] = "0"
+                    res = subprocess.run(["python", "scripts/zhihu_playwright.py"], capture_output=True, text=True, env=env)
+
                 elif p == "xhs":
+                    env = os.environ.copy()
+                    env["PLAYWRIGHT_BROWSERS_PATH"] = "0"
                     res = subprocess.run(["python", "scripts/xhs_playwright.py"], capture_output=True, text=True)
 
                 log.write(f"✅ {p} 脚本输出:\n{res.stdout}\n")

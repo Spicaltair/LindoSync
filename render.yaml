@@ -3,4 +3,4 @@ services:
     name: lindosync-web
     env: docker
     dockerfilePath: ./Dockerfile
-    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT
+    startCommand: ""  # 使用 Dockerfile 里的 CMD
