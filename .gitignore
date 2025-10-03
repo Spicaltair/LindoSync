@@ -1,0 +1,19 @@
+# 登录状态文件
+auth/
+*.json
+
+# 本地配置
+.env
+
+# 个人数据
+data/origin.txt
+data/*.mp3
+data/*.wav
+data/*.mp4
+data/*.jpg
+data/*.png
+
+# 临时生成文件
+*.log
+__pycache__/
+*.pyc
